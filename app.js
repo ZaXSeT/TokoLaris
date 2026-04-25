@@ -398,39 +398,35 @@ const app = {
         if (tbodyKasir) tbodyKasir.innerHTML = '';
         
         AppState.products.forEach(p => {
+            const stockLevel = p.stock < 10 ? 'danger' : (p.stock < 25 ? 'warning' : 'success');
+            const stockBg = stockLevel === 'danger' ? '#fef2f2' : (stockLevel === 'warning' ? '#fffbeb' : '#ecfdf5');
+            const stockColor = stockLevel === 'danger' ? '#ef4444' : (stockLevel === 'warning' ? '#f59e0b' : '#10b981');
+            const stockIcon = stockLevel === 'danger' ? 'alert-triangle' : (stockLevel === 'warning' ? 'alert-circle' : 'check-circle');
+
+            const formattedHtml = `
+                <td><span style="font-family: monospace; font-weight: 600; color: var(--primary); background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.25rem 0.5rem; border-radius: 4px;">#${p.id}</span></td>
+                <td><div style="display:inline-flex; align-items:center; gap:10px; font-weight:500;"><div style="background:#f1f5f9; padding:6px; border-radius:6px; display:flex;"><i data-lucide="box" style="width:16px;height:16px;color:var(--primary)"></i></div> ${p.name}</div></td>
+                <td><strong style="color: var(--text-main); font-size: 1.05rem;">${formatRupiah(p.price)}</strong></td>
+                <td><span style="display:inline-flex; align-items:center; background:${stockBg}; color:${stockColor}; padding:0.25rem 0.6rem; border-radius:1rem; font-size:0.8rem; font-weight:600;"><i data-lucide="${stockIcon}" style="width:12px;height:12px;margin-right:4px;"></i> ${p.stock} Unit</span></td>
+                <td>
+                    <div class="action-btns" style="gap: 8px;">
+                        <button class="btn-icon edit" onclick="app.editBarang(${p.id})" style="background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe;" title="Edit Barang"><i data-lucide="edit-2" style="width:15px;height:15px"></i></button>
+                        <button class="btn-icon delete" onclick="app.deleteBarang(${p.id})" style="background:#fef2f2; color:#ef4444; border:1px solid #fecaca;" title="Hapus Barang"><i data-lucide="trash-2" style="width:15px;height:15px"></i></button>
+                    </div>
+                </td>
+            `;
+
             // Render for Pemilik
             if (tbodyPemilik) {
                 const trPemilik = document.createElement('tr');
-                trPemilik.innerHTML = `
-                    <td>#${p.id}</td>
-                    <td>${p.name}</td>
-                    <td>${formatRupiah(p.price)}</td>
-                    <td>${p.stock}</td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-icon edit" onclick="app.editBarang(${p.id})"><i data-lucide="edit-2" style="width:16px;height:16px"></i></button>
-                            <button class="btn-icon delete" onclick="app.deleteBarang(${p.id})"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
-                        </div>
-                    </td>
-                `;
+                trPemilik.innerHTML = formattedHtml;
                 tbodyPemilik.appendChild(trPemilik);
             }
 
             // Render for Kasir
             if (tbodyKasir) {
                 const trKasir = document.createElement('tr');
-                trKasir.innerHTML = `
-                    <td>#${p.id}</td>
-                    <td>${p.name}</td>
-                    <td>${formatRupiah(p.price)}</td>
-                    <td>${p.stock}</td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-icon edit" onclick="app.editBarang(${p.id})"><i data-lucide="edit-2" style="width:16px;height:16px"></i></button>
-                            <button class="btn-icon delete" onclick="app.deleteBarang(${p.id})"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
-                        </div>
-                    </td>
-                `;
+                trKasir.innerHTML = formattedHtml;
                 tbodyKasir.appendChild(trKasir);
             }
         });
