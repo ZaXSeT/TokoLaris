@@ -556,22 +556,42 @@ const app = {
         });
         
         if(data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted)">Belum ada transaksi</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 3rem 1rem; color: var(--text-muted);"><i data-lucide="inbox" style="width:32px;height:32px;opacity:0.5;margin-bottom:0.5rem;display:block;margin-left:auto;margin-right:auto;"></i>Belum ada transaksi pada periode ini</td></tr>';
+            document.getElementById('report-total-revenue').innerText = 'Rp 0';
+            document.getElementById('report-total-trx').innerText = '0';
+            lucide.createIcons();
             return;
         }
 
+        let totalRevenueFiltered = 0;
         data.reverse().forEach(trx => {
+            totalRevenueFiltered += trx.totalPrice;
             const tr = document.createElement('tr');
             const totalItems = trx.items.reduce((sum, i) => sum + i.qty, 0);
+            
+            const isCash = trx.paymentType.toLowerCase() === 'cash';
+            const badgeBg = isCash ? '#ecfdf5' : '#eff6ff';
+            const badgeColor = isCash ? '#059669' : '#2563eb';
+            const paymentBadge = `<span style="display:inline-flex; align-items:center; background:${badgeBg}; color:${badgeColor}; padding:0.25rem 0.5rem; border-radius:0.5rem; font-size:0.75rem; font-weight:600;"><i data-lucide="${isCash ? 'banknote' : 'qr-code'}" style="width:12px;height:12px;margin-right:4px;"></i> ${trx.paymentType.toUpperCase()}</span>`;
+
+            const dateObj = new Date(trx.date);
+            const dateStr = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            const timeStr = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+
             tr.innerHTML = `
-                <td>${trx.id}</td>
-                <td>${new Date(trx.date).toLocaleString('id-ID')}</td>
-                <td>${totalItems}</td>
-                <td>${formatRupiah(trx.totalPrice)}</td>
-                <td>${trx.paymentType.toUpperCase()}</td>
+                <td><span style="font-family: monospace; font-weight: 600; color: var(--primary); background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.25rem 0.5rem; border-radius: 4px;">${trx.id}</span></td>
+                <td><div style="display:flex; flex-direction:column; line-height: 1.4;"><span style="font-weight:500;">${dateStr}</span><span style="font-size:0.8rem; color:var(--text-muted);">${timeStr} WIB</span></div></td>
+                <td><div style="display:inline-flex; align-items:center; gap:4px; font-weight:500;"><i data-lucide="package" style="width:14px;height:14px;color:var(--text-muted)"></i> ${totalItems} item</div></td>
+                <td><strong style="color: var(--text-main); font-size: 1.05rem;">${formatRupiah(trx.totalPrice)}</strong></td>
+                <td>${paymentBadge}</td>
             `;
             tbody.appendChild(tr);
         });
+
+        document.getElementById('report-total-revenue').innerText = formatRupiah(totalRevenueFiltered);
+        document.getElementById('report-total-trx').innerText = data.length;
+        
+        lucide.createIcons();
     },
 
     // --- UI Helpers ---

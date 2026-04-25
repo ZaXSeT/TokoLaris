@@ -241,6 +241,22 @@
                             </select>
                         </div>
                     </div>
+                    <div class="summary-cards" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="stat-card" style="padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem;">
+                            <div class="stat-icon" style="background: #ecfdf5; color: #059669; padding: 0.75rem; border-radius: 0.5rem;"><i data-lucide="trending-up"></i></div>
+                            <div>
+                                <h3 style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">Total Pendapatan</h3>
+                                <p id="report-total-revenue" style="font-size: 1.25rem; font-weight: 600; color: var(--text-main);">Rp 0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem;">
+                            <div class="stat-icon" style="background: #eff6ff; color: #2563eb; padding: 0.75rem; border-radius: 0.5rem;"><i data-lucide="shopping-bag"></i></div>
+                            <div>
+                                <h3 style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">Total Transaksi</h3>
+                                <p id="report-total-trx" style="font-size: 1.25rem; font-weight: 600; color: var(--text-main);">0</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table class="data-table">
                             <thead>
