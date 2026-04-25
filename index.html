@@ -54,52 +54,91 @@
                 </button>
             </div>
         </nav>
-        <div class="kasir-container">
-            <div class="products-section panel">
-                <div class="section-header">
-                    <h2>Daftar Produk</h2>
-                    <div class="search-bar">
-                        <i data-lucide="search"></i>
-                        <input type="text" id="search-product" placeholder="Cari nama barang...">
-                    </div>
-                </div>
-                <div id="product-grid" class="product-grid">
-                    <!-- Products injected here -->
-                </div>
-            </div>
-            <div class="cart-section panel">
-                <h2>Keranjang Transaksi</h2>
-                <div id="cart-items" class="cart-items">
-                    <!-- Cart items injected here -->
-                    <div class="empty-cart">Belum ada barang di keranjang</div>
-                </div>
-                <div class="cart-summary">
-                    <div class="summary-row">
-                        <span>Total Item</span>
-                        <span id="cart-total-item">0</span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>Total Harga</span>
-                        <span id="cart-total-price">Rp 0</span>
-                    </div>
-                    <div class="payment-box">
-                        <div class="payment-method">
-                            <label>Metode Pembayaran</label>
-                            <select id="payment-type" class="form-control">
-                                <option value="cash">Tunai (Cash)</option>
-                                <option value="qris">QRIS / Transfer</option>
-                            </select>
+        <div class="pemilik-container">
+            <aside class="sidebar panel">
+                <ul class="nav-menu">
+                    <li id="nav-kasir-transaksi" class="active" onclick="app.switchKasirTab('kasir-transaksi-tab')">
+                        <i data-lucide="shopping-cart"></i> Transaksi
+                    </li>
+                    <li id="nav-kasir-barang" onclick="app.switchKasirTab('kasir-barang-tab')">
+                        <i data-lucide="package"></i> Data Barang
+                    </li>
+                </ul>
+            </aside>
+            <main class="main-content">
+                <!-- Transaksi Tab -->
+                <div id="kasir-transaksi-tab" class="tab-content active">
+                    <div class="kasir-container">
+                        <div class="products-section panel">
+                            <div class="section-header">
+                                <h2>Daftar Produk</h2>
+                                <div class="search-bar">
+                                    <i data-lucide="search"></i>
+                                    <input type="text" id="search-product" placeholder="Cari nama barang...">
+                                </div>
+                            </div>
+                            <div id="product-grid" class="product-grid">
+                                <!-- Products injected here -->
+                            </div>
                         </div>
-                        <div id="cash-input-group" class="input-group mt-1">
-                            <label>Nominal Uang Tunai (Rp)</label>
-                            <input type="number" id="cash-amount" class="form-control" placeholder="0">
+                        <div class="cart-section panel">
+                            <h2>Keranjang Transaksi</h2>
+                            <div id="cart-items" class="cart-items">
+                                <!-- Cart items injected here -->
+                                <div class="empty-cart">Belum ada barang di keranjang</div>
+                            </div>
+                            <div class="cart-summary">
+                                <div class="summary-row">
+                                    <span>Total Item</span>
+                                    <span id="cart-total-item">0</span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Total Harga</span>
+                                    <span id="cart-total-price">Rp 0</span>
+                                </div>
+                                <div class="payment-box">
+                                    <div class="payment-method">
+                                        <label>Metode Pembayaran</label>
+                                        <select id="payment-type" class="form-control">
+                                            <option value="cash">Tunai (Cash)</option>
+                                            <option value="qris">QRIS / Transfer</option>
+                                        </select>
+                                    </div>
+                                    <div id="cash-input-group" class="input-group mt-1">
+                                        <label>Nominal Uang Tunai (Rp)</label>
+                                        <input type="number" id="cash-amount" class="form-control" placeholder="0">
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-block btn-lg mt-1" onclick="app.processCheckout()">
+                                    Proses Pembayaran
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <button class="btn btn-primary btn-block btn-lg mt-1" onclick="app.processCheckout()">
-                        Proses Pembayaran
-                    </button>
                 </div>
-            </div>
+
+                <!-- Data Barang Tab untuk Kasir -->
+                <div id="kasir-barang-tab" class="tab-content hidden panel">
+                    <div class="section-header">
+                        <h2>Daftar Data Barang</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama Barang</th>
+                                    <th>Harga</th>
+                                    <th>Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-barang-kasir-body">
+                                <!-- Data barang injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
         </div>
     </section>
 

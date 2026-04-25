@@ -140,23 +140,38 @@ const app = {
     },
 
     switchTab(tabId) {
-        // Update menu active state
-        document.querySelectorAll('.nav-menu li').forEach(li => li.classList.remove('active'));
-        document.querySelector(`[data-target="${tabId}"]`).classList.add('active');
-
-        // Update tab visibility
-        document.querySelectorAll('.tab-content').forEach(tab => {
+        document.querySelectorAll('#pemilik-view .tab-content').forEach(tab => {
             tab.classList.remove('active');
             tab.classList.add('hidden');
         });
+        document.querySelectorAll('#pemilik-view .nav-menu li').forEach(li => li.classList.remove('active'));
+        
         const target = document.getElementById(tabId);
         target.classList.remove('hidden');
         target.classList.add('active');
+        
+        document.querySelector(`#pemilik-view [data-target="${tabId}"]`).classList.add('active');
 
         // Re-render specifics based on tab
         if(tabId === 'dashboard-tab') this.updateDashboard();
         if(tabId === 'barang-tab') this.renderBarang();
         if(tabId === 'laporan-tab') this.renderReport();
+    },
+
+    switchKasirTab(tabId) {
+        document.querySelectorAll('#kasir-view .tab-content').forEach(tab => {
+            tab.classList.remove('active');
+            tab.classList.add('hidden');
+        });
+        document.querySelectorAll('#kasir-view .nav-menu li').forEach(li => li.classList.remove('active'));
+        
+        const target = document.getElementById(tabId);
+        target.classList.remove('hidden');
+        target.classList.add('active');
+        
+        document.querySelector(`#kasir-view [data-target="${tabId}"]`).classList.add('active');
+        
+        if(tabId === 'kasir-barang-tab') this.renderBarang();
     },
 
     // --- KASIR MODULE ---
@@ -373,25 +388,44 @@ const app = {
         document.getElementById('stat-items').innerText = AppState.products.length;
     },
 
+    // --- Manajemen Barang ---
     renderBarang() {
-        const tbody = document.getElementById('table-barang-body');
-        tbody.innerHTML = '';
+        const tbodyPemilik = document.getElementById('table-barang-body');
+        const tbodyKasir = document.getElementById('table-barang-kasir-body');
+        
+        if (tbodyPemilik) tbodyPemilik.innerHTML = '';
+        if (tbodyKasir) tbodyKasir.innerHTML = '';
         
         AppState.products.forEach(p => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>#${p.id}</td>
-                <td>${p.name}</td>
-                <td>${formatRupiah(p.price)}</td>
-                <td>${p.stock}</td>
-                <td>
-                    <div class="action-btns">
-                        <button class="btn-icon edit" onclick="app.editBarang(${p.id})"><i data-lucide="edit-2" style="width:16px;height:16px"></i></button>
-                        <button class="btn-icon delete" onclick="app.deleteBarang(${p.id})"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(tr);
+            // Render for Pemilik
+            if (tbodyPemilik) {
+                const trPemilik = document.createElement('tr');
+                trPemilik.innerHTML = `
+                    <td>#${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${formatRupiah(p.price)}</td>
+                    <td>${p.stock}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-icon edit" onclick="app.editBarang(${p.id})"><i data-lucide="edit-2" style="width:16px;height:16px"></i></button>
+                            <button class="btn-icon delete" onclick="app.deleteBarang(${p.id})"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbodyPemilik.appendChild(trPemilik);
+            }
+
+            // Render for Kasir (Read-only)
+            if (tbodyKasir) {
+                const trKasir = document.createElement('tr');
+                trKasir.innerHTML = `
+                    <td>#${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${formatRupiah(p.price)}</td>
+                    <td>${p.stock}</td>
+                `;
+                tbodyKasir.appendChild(trKasir);
+            }
         });
         lucide.createIcons();
     },
