@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Penjualan Toko Laris</title>
+    <meta name="description" content="Sistem Informasi Penjualan Toko Laris Medan - Interaktif">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <!-- Login View -->
+    <section id="login-view" class="view active">
+        <div class="login-box panel">
+            <div class="login-header">
+                <div class="logo-icon">
+                    <i data-lucide="store"></i>
+                </div>
+                <h1>Toko Laris</h1>
+                <p>Sistem Informasi Penjualan</p>
+            </div>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Masukkan username" required autocomplete="off" oninvalid="this.setCustomValidity('Mohon isi username Anda')" oninput="this.setCustomValidity(''); document.getElementById('login-error').style.display='none';">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Masukkan password" required oninvalid="this.setCustomValidity('Mohon isi password Anda')" oninput="this.setCustomValidity(''); document.getElementById('login-error').style.display='none';">
+                </div>
+                <div id="login-error" style="color: var(--danger); font-size: 0.875rem; text-align: center; margin-top: -0.5rem; margin-bottom: 1rem; display: none; font-weight: 500;"></div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-1">Masuk ke Sistem</button>
+                <div class="demo-info">
+                    <small><strong>Akses Akun:</strong><br>Kasir (kasir/123) &bull; Pemilik (pemilik/123)</small>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Kasir View -->
+    <section id="kasir-view" class="view hidden">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i data-lucide="shopping-cart"></i>
+                <span>Toko Laris | Kasir</span>
+            </div>
+            <div class="nav-user">
+                <span class="user-badge"><i data-lucide="user"></i> Kasir Aktif</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="app.logout()">
+                    <i data-lucide="log-out"></i> Keluar
+                </button>
+            </div>
+        </nav>
+        <div class="kasir-container">
+            <div class="products-section panel">
+                <div class="section-header">
+                    <h2>Daftar Produk</h2>
+                    <div class="search-bar">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="search-product" placeholder="Cari nama barang...">
+                    </div>
+                </div>
+                <div id="product-grid" class="product-grid">
+                    <!-- Products injected here -->
+                </div>
+            </div>
+            <div class="cart-section panel">
+                <h2>Keranjang Transaksi</h2>
+                <div id="cart-items" class="cart-items">
+                    <!-- Cart items injected here -->
+                    <div class="empty-cart">Belum ada barang di keranjang</div>
+                </div>
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Total Item</span>
+                        <span id="cart-total-item">0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Harga</span>
+                        <span id="cart-total-price">Rp 0</span>
+                    </div>
+                    <div class="payment-box">
+                        <div class="payment-method">
+                            <label>Metode Pembayaran</label>
+                            <select id="payment-type" class="form-control">
+                                <option value="cash">Tunai (Cash)</option>
+                                <option value="qris">QRIS / Transfer</option>
+                            </select>
+                        </div>
+                        <div id="cash-input-group" class="input-group mt-1">
+                            <label>Nominal Uang Tunai (Rp)</label>
+                            <input type="number" id="cash-amount" class="form-control" placeholder="0">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-block btn-lg mt-1" onclick="app.processCheckout()">
+                        Proses Pembayaran
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pemilik View -->
+    <section id="pemilik-view" class="view hidden">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i data-lucide="bar-chart-2"></i>
+                <span>Toko Laris | Administrator</span>
+            </div>
+            <div class="nav-user">
+                <span class="user-badge owner"><i data-lucide="shield"></i> Pemilik</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="app.logout()">
+                    <i data-lucide="log-out"></i> Keluar
+                </button>
+            </div>
+        </nav>
+        <div class="pemilik-container">
+            <aside class="sidebar panel">
+                <ul class="nav-menu">
+                    <li class="active" data-target="dashboard-tab" onclick="app.switchTab('dashboard-tab')">
+                        <i data-lucide="layout-dashboard"></i> Dashboard
+                    </li>
+                    <li data-target="barang-tab" onclick="app.switchTab('barang-tab')">
+                        <i data-lucide="package"></i> Data Barang
+                    </li>
+                    <li data-target="laporan-tab" onclick="app.switchTab('laporan-tab')">
+                        <i data-lucide="file-text"></i> Laporan Penjualan
+                    </li>
+                </ul>
+            </aside>
+            <main class="main-content">
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content active">
+                    <h2 class="page-title">Ringkasan Sistem</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card panel">
+                            <div class="stat-icon bg-blue"><i data-lucide="trending-up"></i></div>
+                            <div class="stat-info">
+                                <h3>Total Pendapatan</h3>
+                                <p id="stat-revenue">Rp 0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card panel">
+                            <div class="stat-icon bg-green"><i data-lucide="shopping-bag"></i></div>
+                            <div class="stat-info">
+                                <h3>Total Transaksi</h3>
+                                <p id="stat-transactions">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card panel">
+                            <div class="stat-icon bg-purple"><i data-lucide="box"></i></div>
+                            <div class="stat-info">
+                                <h3>Total Barang</h3>
+                                <p id="stat-items">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kelola Barang Tab -->
+                <div id="barang-tab" class="tab-content hidden panel">
+                    <div class="section-header">
+                        <h2>Manajemen Data Barang</h2>
+                        <button class="btn btn-primary" onclick="app.openModal('modal-barang')">
+                            <i data-lucide="plus"></i> Tambah Barang
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama Barang</th>
+                                    <th>Harga</th>
+                                    <th>Stok</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-barang-body">
+                                <!-- Data barang injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Laporan Tab -->
+                <div id="laporan-tab" class="tab-content hidden panel">
+                    <div class="section-header">
+                        <h2>Laporan Penjualan</h2>
+                        <div class="filter-group">
+                            <select id="report-filter" class="form-control" onchange="app.renderReport()">
+                                <option value="all">Semua Waktu</option>
+                                <option value="harian">Harian</option>
+                                <option value="bulanan">Bulanan</option>
+                                <option value="tahunan">Tahunan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>No. Transaksi</th>
+                                    <th>Waktu</th>
+                                    <th>Total Item</th>
+                                    <th>Total Harga</th>
+                                    <th>Pembayaran</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-laporan-body">
+                                <!-- Laporan injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- Modal Barang -->
+    <div id="modal-barang" class="modal-overlay hidden">
+        <div class="modal panel">
+            <div class="modal-header">
+                <h3 id="modal-barang-title">Tambah Barang</h3>
+                <button class="btn-close" onclick="app.closeModal('modal-barang')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-barang" onsubmit="app.saveBarang(event)">
+                    <input type="hidden" id="barang-id">
+                    <div class="input-group">
+                        <label>Nama Barang</label>
+                        <input type="text" class="form-control" id="barang-nama" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Harga (Rp)</label>
+                        <input type="number" class="form-control" id="barang-harga" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Stok</label>
+                        <input type="number" class="form-control" id="barang-stok" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-barang')">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Struk -->
+    <div id="modal-struk" class="modal-overlay hidden">
+        <div class="modal receipt-modal panel">
+            <div class="modal-header">
+                <h3>Cetak Struk</h3>
+                <button class="btn-close" onclick="app.closeModal('modal-struk')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body receipt-body">
+                <div class="receipt">
+                    <div class="receipt-header">
+                        <h2>TOKO LARIS MEDAN</h2>
+                        <p>Jl. Jend. Sudirman No. 123, Medan</p>
+                        <p>Telp: (061) 1234567</p>
+                        <div class="divider"></div>
+                        <p>No: <span id="struk-id"></span></p>
+                        <p>Waktu: <span id="struk-time"></span></p>
+                        <p>Kasir: Kasir</p>
+                        <div class="divider"></div>
+                    </div>
+                    <div id="struk-items" class="receipt-items">
+                        <!-- Items here -->
+                    </div>
+                    <div class="divider"></div>
+                    <div class="receipt-totals">
+                        <div class="row"><span>Total:</span> <span id="struk-total">Rp 0</span></div>
+                        <div class="row"><span>Bayar (<span id="struk-method"></span>):</span> <span id="struk-bayar">Rp 0</span></div>
+                        <div class="row"><span>Kembali:</span> <span id="struk-kembali">Rp 0</span></div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="receipt-footer">
+                        <p>Terima Kasih Atas Kunjungan Anda</p>
+                        <p>Barang yang sudah dibeli tidak dapat ditukar/dikembalikan</p>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary btn-block" onclick="app.closeModal('modal-struk'); app.clearCart()">Selesai</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
