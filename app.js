@@ -316,7 +316,6 @@ const app = {
             kembali = bayar - totalPrice;
         }
 
-        // Generate Transaction Record
         const transaction = {
             id: 'TRX-' + Math.floor(Math.random() * 1000000),
             date: new Date().toISOString(),
@@ -328,12 +327,29 @@ const app = {
         };
 
         if (paymentType === 'qris') {
-            this.showToast('Memverifikasi pembayaran ke Bank...', 'success');
+            // Store pending, show QRIS modal
+            AppState.pendingTransaction = transaction;
+            document.getElementById('qris-total').innerText = formatRupiah(totalPrice);
+            document.getElementById('modal-qris').classList.add('active');
+            lucide.createIcons();
+        } else if (paymentType === 'kartu') {
+            // Show loading modal, then finalize after 2s
+            document.getElementById('modal-kartu').classList.add('active');
+            lucide.createIcons();
             setTimeout(() => {
+                document.getElementById('modal-kartu').classList.remove('active');
                 this._finalizeCheckout(transaction);
-            }, 1500);
+            }, 2000);
         } else {
             this._finalizeCheckout(transaction);
+        }
+    },
+
+    confirmQrisPayment() {
+        document.getElementById('modal-qris').classList.remove('active');
+        if (AppState.pendingTransaction) {
+            this._finalizeCheckout(AppState.pendingTransaction);
+            AppState.pendingTransaction = null;
         }
     },
 
@@ -544,21 +560,55 @@ const app = {
         }
     },
 
+    handleFilterChange() {
+        const filter = document.getElementById('report-filter').value;
+        const dateEl = document.getElementById('filter-date');
+        const monthEl = document.getElementById('filter-month');
+        const yearEl = document.getElementById('filter-year');
+
+        // Hide all sub-inputs first
+        dateEl.style.display = 'none';
+        monthEl.style.display = 'none';
+        yearEl.style.display = 'none';
+
+        // Set default value to today/current month/current year
+        if (filter === 'harian') {
+            const today = new Date().toISOString().split('T')[0];
+            dateEl.value = today;
+            dateEl.style.display = 'block';
+        } else if (filter === 'bulanan') {
+            const now = new Date();
+            monthEl.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+            monthEl.style.display = 'block';
+        } else if (filter === 'tahunan') {
+            yearEl.value = new Date().getFullYear();
+            yearEl.style.display = 'block';
+        }
+
+        this.renderReport();
+    },
+
     renderReport() {
         const tbody = document.getElementById('table-laporan-body');
         tbody.innerHTML = '';
         
         const filter = document.getElementById('report-filter').value;
-        const now = new Date();
         let data = AppState.transactions.filter(trx => {
             if (filter === 'all') return true;
             const trxDate = new Date(trx.date);
             if (filter === 'harian') {
-                return trxDate.toDateString() === now.toDateString();
+                const selectedDate = document.getElementById('filter-date').value;
+                if (!selectedDate) return true;
+                return trxDate.toISOString().split('T')[0] === selectedDate;
             } else if (filter === 'bulanan') {
-                return trxDate.getMonth() === now.getMonth() && trxDate.getFullYear() === now.getFullYear();
+                const selectedMonth = document.getElementById('filter-month').value; // YYYY-MM
+                if (!selectedMonth) return true;
+                const [yr, mo] = selectedMonth.split('-').map(Number);
+                return trxDate.getFullYear() === yr && (trxDate.getMonth() + 1) === mo;
             } else if (filter === 'tahunan') {
-                return trxDate.getFullYear() === now.getFullYear();
+                const selectedYear = parseInt(document.getElementById('filter-year').value);
+                if (!selectedYear) return true;
+                return trxDate.getFullYear() === selectedYear;
             }
             return true;
         });
@@ -577,10 +627,16 @@ const app = {
             const tr = document.createElement('tr');
             const totalItems = trx.items.reduce((sum, i) => sum + i.qty, 0);
             
-            const isCash = trx.paymentType.toLowerCase() === 'cash';
-            const badgeBg = isCash ? '#ecfdf5' : '#eff6ff';
-            const badgeColor = isCash ? '#059669' : '#2563eb';
-            const paymentBadge = `<span style="display:inline-flex; align-items:center; background:${badgeBg}; color:${badgeColor}; padding:0.25rem 0.5rem; border-radius:0.5rem; font-size:0.75rem; font-weight:600;"><i data-lucide="${isCash ? 'banknote' : 'qr-code'}" style="width:12px;height:12px;margin-right:4px;"></i> ${trx.paymentType.toUpperCase()}</span>`;
+            const pt = trx.paymentType.toLowerCase();
+            let badgeBg, badgeColor, badgeIcon;
+            if (pt === 'cash') {
+                badgeBg = '#ecfdf5'; badgeColor = '#059669'; badgeIcon = 'banknote';
+            } else if (pt === 'kartu') {
+                badgeBg = '#f5f3ff'; badgeColor = '#7c3aed'; badgeIcon = 'credit-card';
+            } else {
+                badgeBg = '#eff6ff'; badgeColor = '#2563eb'; badgeIcon = 'qr-code';
+            }
+            const paymentBadge = `<span style="display:inline-flex; align-items:center; background:${badgeBg}; color:${badgeColor}; padding:0.25rem 0.5rem; border-radius:0.5rem; font-size:0.75rem; font-weight:600;"><i data-lucide="${badgeIcon}" style="width:12px;height:12px;margin-right:4px;"></i> ${trx.paymentType.toUpperCase()}</span>`;
 
             const dateObj = new Date(trx.date);
             const dateStr = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });

@@ -102,6 +102,7 @@
                                         <select id="payment-type" class="form-control">
                                             <option value="cash">Tunai (Cash)</option>
                                             <option value="qris">QRIS / Transfer</option>
+                                            <option value="kartu">Kartu Debit/Kredit</option>
                                         </select>
                                     </div>
                                     <div id="cash-input-group" class="input-group mt-1">
@@ -236,13 +237,16 @@
                 <div id="laporan-tab" class="tab-content hidden panel">
                     <div class="section-header">
                         <h2>Laporan Penjualan</h2>
-                        <div class="filter-group">
-                            <select id="report-filter" class="form-control" onchange="app.renderReport()">
+                        <div class="filter-group" style="display: flex; gap: 0.5rem;">
+                            <select id="report-filter" class="form-control" onchange="app.handleFilterChange()">
                                 <option value="all">Semua Waktu</option>
                                 <option value="harian">Harian</option>
                                 <option value="bulanan">Bulanan</option>
                                 <option value="tahunan">Tahunan</option>
                             </select>
+                            <input type="date" id="filter-date" class="form-control" style="display: none;" onchange="app.renderReport()">
+                            <input type="month" id="filter-month" class="form-control" style="display: none;" onchange="app.renderReport()">
+                            <input type="number" id="filter-year" class="form-control" style="display: none; max-width: 120px;" placeholder="Tahun" oninput="app.renderReport()">
                         </div>
                     </div>
                     <div class="summary-cards" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
@@ -400,6 +404,50 @@
                 </div>
                 <div class="modal-actions">
                     <button class="btn btn-primary btn-block" onclick="app.closeModal('modal-struk'); app.clearCart()">Selesai</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QRIS -->
+    <div id="modal-qris" class="modal-overlay hidden">
+        <div class="modal panel" style="max-width: 380px;">
+            <div class="modal-header">
+                <h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="qr-code" style="width:20px;height:20px;color:var(--primary)"></i> Pembayaran QRIS</h3>
+            </div>
+            <div class="modal-body" style="text-align:center; padding: 1.5rem;">
+                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">Scan QR code berikut untuk menyelesaikan pembayaran</p>
+                <div style="background:#fff; border: 2px solid #e2e8f0; border-radius:12px; padding:1rem; display:inline-block; margin-bottom:1rem;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TOKOLARIS-MEDAN-PAYMENT&color=1a1a2e&bgcolor=ffffff" 
+                         alt="QRIS Code" style="width:180px;height:180px;display:block;border-radius:4px;">
+                </div>
+                <div style="background:#f8fafc; border-radius:8px; padding:0.75rem; margin-bottom:1.5rem; border:1px solid #e2e8f0;">
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Total Pembayaran</p>
+                    <p id="qris-total" style="font-size:1.5rem; font-weight:700; color:var(--primary);">Rp 0</p>
+                </div>
+                <p style="font-size:0.8rem; color:#f59e0b; display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:1.5rem;">
+                    <i data-lucide="alert-circle" style="width:14px;height:14px;"></i>
+                    Tekan Konfirmasi setelah pembayaran berhasil
+                </p>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="app.closeModal('modal-qris')">Batal</button>
+                    <button class="btn btn-primary" onclick="app.confirmQrisPayment()">
+                        <i data-lucide="check-circle" style="width:16px;height:16px;margin-right:4px;"></i> Konfirmasi Bayar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Verifikasi Kartu -->
+    <div id="modal-kartu" class="modal-overlay hidden">
+        <div class="modal panel" style="max-width: 360px;">
+            <div class="modal-body" style="text-align:center; padding: 2.5rem 1.5rem;">
+                <div style="width:70px; height:70px; border:4px solid #e2e8f0; border-top-color:var(--primary); border-radius:50%; animation: spin 1s linear infinite; margin:0 auto 1.5rem;"></div>
+                <h3 style="margin-bottom:0.5rem; font-size:1.1rem;">Memverifikasi Pembayaran</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Sedang menghubungi jaringan bank...<br>Mohon tunggu sebentar.</p>
+                <div style="margin-top:1.5rem; display:flex; align-items:center; justify-content:center; gap:6px; color:var(--primary); font-size:0.85rem; font-weight:600;">
+                    <i data-lucide="credit-card" style="width:16px;height:16px;"></i> Kartu Debit/Kredit
                 </div>
             </div>
         </div>

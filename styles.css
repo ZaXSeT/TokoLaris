@@ -482,3 +482,11 @@ select.form-control:hover {
 
 .toast.success svg { color: var(--success); }
 .toast.error svg { color: var(--danger); }
+
+/* Spinner animation */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Filter group */
+.filter-group { display: flex; gap: 0.5rem; align-items: center; }
