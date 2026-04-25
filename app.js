@@ -439,14 +439,20 @@ const app = {
         tbody.innerHTML = '';
         AppState.users.forEach(u => {
             const tr = document.createElement('tr');
-            const action = u.role === 'kasir' 
-                ? `<button class="btn-icon delete" onclick="app.deleteAkun('${u.username}')" title="Hapus"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>` 
-                : `<span class="text-muted" style="font-size: 0.85rem">Akun Utama</span>`;
             
+            const isPemilik = u.role === 'pemilik';
+            const action = isPemilik 
+                ? `<span style="background: #f1f5f9; color: var(--text-muted); padding: 0.25rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="shield-check" style="width:14px;height:14px;"></i> Utama</span>`
+                : `<button class="btn-icon delete" onclick="app.deleteAkun('${u.username}')" style="background:#fef2f2; color:#ef4444; border:1px solid #fecaca; margin: 0;" title="Hapus"><i data-lucide="trash-2" style="width:15px;height:15px"></i></button>`;
+            
+            const userIcon = isPemilik ? 'crown' : 'user';
+            const iconColor = isPemilik ? '#f59e0b' : 'var(--primary)';
+            const iconBg = isPemilik ? '#fffbeb' : '#f1f5f9';
+
             tr.innerHTML = `
-                <td>${u.username}</td>
-                <td><span style="font-family: monospace;">${u.password}</span></td>
-                <td><span class="user-badge" style="display:inline-flex; width:max-content; background: ${u.role==='pemilik'?'#eff6ff':'#f3f4f6'}; padding: 0.25rem 0.5rem; border-radius: 1rem; color: ${u.role==='pemilik'?'var(--primary)':'var(--text-main)'}; font-size: 0.75rem;">${u.role.toUpperCase()}</span></td>
+                <td><div style="display:inline-flex; align-items:center; gap:10px; font-weight:600; font-size:1.05rem;"><div style="background:${iconBg}; padding:6px; border-radius:6px; display:flex;"><i data-lucide="${userIcon}" style="width:18px;height:18px;color:${iconColor}"></i></div> ${u.username}</div></td>
+                <td><div style="display:inline-flex; align-items:center; gap:6px;"><i data-lucide="key" style="width:14px;height:14px;color:var(--text-muted)"></i> <span style="font-family: monospace; font-size: 1rem; letter-spacing: 1px; color: var(--text-main); font-weight: 500;">${u.password}</span></div></td>
+                <td><span class="user-badge" style="display:inline-flex; align-items:center; width:max-content; background: ${isPemilik?'#eff6ff':'#ecfdf5'}; padding: 0.3rem 0.6rem; border-radius: 1rem; color: ${isPemilik?'var(--primary)':'#059669'}; font-size: 0.75rem; font-weight: 600;"><i data-lucide="${isPemilik ? 'shield' : 'briefcase'}" style="width:12px;height:12px;margin-right:4px;"></i> ${u.role.toUpperCase()}</span></td>
                 <td>${action}</td>
             `;
             tbody.appendChild(tr);
