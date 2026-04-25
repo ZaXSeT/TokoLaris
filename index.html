@@ -121,6 +121,9 @@
                 <div id="kasir-barang-tab" class="tab-content hidden panel">
                     <div class="section-header">
                         <h2>Daftar Data Barang</h2>
+                        <button class="btn btn-primary" onclick="app.openModal('modal-barang')">
+                            <i data-lucide="plus"></i> Tambah Barang
+                        </button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -130,6 +133,7 @@
                                     <th>Nama Barang</th>
                                     <th>Harga</th>
                                     <th>Stok</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="table-barang-kasir-body">

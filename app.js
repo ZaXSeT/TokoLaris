@@ -416,7 +416,7 @@ const app = {
                 tbodyPemilik.appendChild(trPemilik);
             }
 
-            // Render for Kasir (Read-only)
+            // Render for Kasir
             if (tbodyKasir) {
                 const trKasir = document.createElement('tr');
                 trKasir.innerHTML = `
@@ -424,6 +424,12 @@ const app = {
                     <td>${p.name}</td>
                     <td>${formatRupiah(p.price)}</td>
                     <td>${p.stock}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-icon edit" onclick="app.editBarang(${p.id})"><i data-lucide="edit-2" style="width:16px;height:16px"></i></button>
+                            <button class="btn-icon delete" onclick="app.deleteBarang(${p.id})"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
+                        </div>
+                    </td>
                 `;
                 tbodyKasir.appendChild(trKasir);
             }
