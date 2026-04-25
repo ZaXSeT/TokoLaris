@@ -294,6 +294,7 @@ select.form-control:hover {
     margin-bottom: 1rem;
     max-height: 380px;
     padding-right: 4px;
+    overscroll-behavior: contain;
 }
 
 .cart-items::-webkit-scrollbar {
