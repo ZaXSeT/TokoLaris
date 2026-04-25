@@ -403,7 +403,7 @@ const app = {
         AppState.users.forEach(u => {
             const tr = document.createElement('tr');
             const action = u.role === 'kasir' 
-                ? `<button class="btn-icon delete" onclick="app.deleteAkun('${u.username}')" title="Hapus"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>` 
+                ? `<button class="btn-icon delete" onclick="app.deleteAkun('${u.username}')" title="Hapus"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>` 
                 : `<span class="text-muted" style="font-size: 0.85rem">Akun Utama</span>`;
             
             tr.innerHTML = `
@@ -414,6 +414,7 @@ const app = {
             `;
             tbody.appendChild(tr);
         });
+        lucide.createIcons();
     },
 
     saveAkun(e) {
