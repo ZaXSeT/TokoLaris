@@ -11,16 +11,23 @@ const defaultProducts = [
     { id: 6, name: 'Susu Kental Manis', price: 12500, stock: 60 }
 ];
 
+const defaultUsers = [
+    { id: 1, username: 'pemilik', password: '123', role: 'pemilik' },
+    { id: 2, username: 'kasir', password: '123', role: 'kasir' }
+];
+
 const AppState = {
     user: null,
     products: JSON.parse(localStorage.getItem('toko_laris_products')) || defaultProducts,
     cart: [],
-    transactions: JSON.parse(localStorage.getItem('toko_laris_transactions')) || []
+    transactions: JSON.parse(localStorage.getItem('toko_laris_transactions')) || [],
+    users: JSON.parse(localStorage.getItem('toko_laris_users')) || defaultUsers
 };
 
 const saveState = () => {
     localStorage.setItem('toko_laris_products', JSON.stringify(AppState.products));
     localStorage.setItem('toko_laris_transactions', JSON.stringify(AppState.transactions));
+    localStorage.setItem('toko_laris_users', JSON.stringify(AppState.users));
 };
 
 // Formatting Helper
@@ -88,20 +95,24 @@ const app = {
             return;
         }
 
-        if (user === 'kasir' && pass === '123') {
+        const foundUser = AppState.users.find(u => u.username === user && u.password === pass);
+
+        if (foundUser) {
             errorEl.style.display = 'none';
-            AppState.user = { role: 'kasir', name: 'Kasir Utama' };
-            this.switchView('kasir');
-            this.renderProducts();
-            this.showToast('Berhasil login sebagai Kasir', 'success');
-        } else if (user === 'pemilik' && pass === '123') {
-            errorEl.style.display = 'none';
-            AppState.user = { role: 'pemilik', name: 'Bapak Budi' };
-            this.switchView('pemilik');
-            this.updateDashboard();
-            this.renderBarang();
-            this.renderReport();
-            this.showToast('Berhasil login sebagai Pemilik', 'success');
+            AppState.user = { role: foundUser.role, name: foundUser.username };
+            
+            if (foundUser.role === 'kasir') {
+                this.switchView('kasir');
+                this.renderProducts();
+                this.showToast(`Berhasil login sebagai ${foundUser.username}`, 'success');
+            } else {
+                this.switchView('pemilik');
+                this.updateDashboard();
+                this.renderBarang();
+                this.renderReport();
+                this.renderAkun();
+                this.showToast('Berhasil login sebagai Pemilik', 'success');
+            }
         } else {
             errorEl.innerText = 'Username atau Password Salah!';
             errorEl.style.display = 'block';
@@ -383,6 +394,62 @@ const app = {
             tbody.appendChild(tr);
         });
         lucide.createIcons();
+    },
+
+    // --- Manajemen Akun ---
+    renderAkun() {
+        const tbody = document.getElementById('table-akun-body');
+        tbody.innerHTML = '';
+        AppState.users.forEach(u => {
+            const tr = document.createElement('tr');
+            const action = u.role === 'kasir' 
+                ? `<button class="btn-icon delete" onclick="app.deleteAkun('${u.username}')" title="Hapus"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>` 
+                : `<span class="text-muted" style="font-size: 0.85rem">Akun Utama</span>`;
+            
+            tr.innerHTML = `
+                <td>${u.username}</td>
+                <td><span style="font-family: monospace;">${u.password}</span></td>
+                <td><span class="user-badge" style="display:inline-flex; width:max-content; background: ${u.role==='pemilik'?'#eff6ff':'#f3f4f6'}; padding: 0.25rem 0.5rem; border-radius: 1rem; color: ${u.role==='pemilik'?'var(--primary)':'var(--text-main)'}; font-size: 0.75rem;">${u.role.toUpperCase()}</span></td>
+                <td>${action}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    },
+
+    saveAkun(e) {
+        e.preventDefault();
+        const username = document.getElementById('akun-username').value.trim();
+        const password = document.getElementById('akun-password').value.trim();
+        
+        if (AppState.users.find(u => u.username === username)) {
+            this.showToast('User ID sudah digunakan!', 'error');
+            return;
+        }
+
+        AppState.users.push({
+            id: Date.now(),
+            username,
+            password,
+            role: 'kasir'
+        });
+
+        saveState();
+        this.closeModal('modal-akun');
+        this.renderAkun();
+        
+        // Reset form
+        document.getElementById('akun-username').value = '';
+        document.getElementById('akun-password').value = '';
+        this.showToast('Karyawan Baru Berhasil Ditambahkan', 'success');
+    },
+
+    deleteAkun(username) {
+        if(confirm(`Apakah Anda yakin ingin menghapus akses untuk kasir '${username}'?`)) {
+            AppState.users = AppState.users.filter(u => u.username !== username);
+            saveState();
+            this.renderAkun();
+            this.showToast('Akun kasir berhasil dihapus', 'success');
+        }
     },
 
     saveBarang(e) {

@@ -129,6 +129,9 @@
                     <li data-target="laporan-tab" onclick="app.switchTab('laporan-tab')">
                         <i data-lucide="file-text"></i> Laporan Penjualan
                     </li>
+                    <li data-target="akun-tab" onclick="app.switchTab('akun-tab')">
+                        <i data-lucide="users"></i> Kelola Akun
+                    </li>
                 </ul>
             </aside>
             <main class="main-content">
@@ -216,6 +219,31 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- Kelola Akun Tab -->
+                <div id="akun-tab" class="tab-content hidden panel">
+                    <div class="section-header">
+                        <h2>Manajemen Akun Karyawan</h2>
+                        <button class="btn btn-primary" onclick="app.openModal('modal-akun')">
+                            <i data-lucide="plus"></i> Tambah Karyawan
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User ID (Username)</th>
+                                    <th>Password</th>
+                                    <th>Role Akses</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-akun-body">
+                                <!-- Data akun injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </main>
         </div>
     </section>
@@ -244,6 +272,32 @@
                     </div>
                     <div class="modal-actions">
                         <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-barang')">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Akun -->
+    <div id="modal-akun" class="modal-overlay hidden">
+        <div class="modal panel">
+            <div class="modal-header">
+                <h3>Tambah Akun Karyawan</h3>
+                <button class="btn-close" onclick="app.closeModal('modal-akun')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-akun" onsubmit="app.saveAkun(event)">
+                    <div class="input-group">
+                        <label>User ID (Username)</label>
+                        <input type="text" class="form-control" id="akun-username" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password Baru</label>
+                        <input type="text" class="form-control" id="akun-password" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-akun')">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
