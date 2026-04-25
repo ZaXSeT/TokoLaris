@@ -104,6 +104,7 @@ const app = {
             if (foundUser.role === 'kasir') {
                 this.switchView('kasir');
                 this.renderProducts();
+                this.renderBarang(); // Pre-render kasir data barang
                 this.showToast(`Berhasil login sebagai ${foundUser.username}`, 'success');
             } else {
                 this.switchView('pemilik');
