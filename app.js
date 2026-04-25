@@ -43,9 +43,19 @@ const app = {
     },
 
     bindEvents() {
-        document.getElementById('login-form').addEventListener('submit', this.handleLogin.bind(this));
-        document.getElementById('search-product').addEventListener('input', (e) => this.renderProducts(e.target.value));
+        document.getElementById('login-form').addEventListener('submit', (e) => app.handleLogin(e));
+        document.getElementById('search-product').addEventListener('input', (e) => app.renderProducts(e.target.value));
         
+        // Clear login errors on typing
+        document.getElementById('username').addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            document.getElementById('login-error').style.display = 'none';
+        });
+        document.getElementById('password').addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            document.getElementById('login-error').style.display = 'none';
+        });
+
         // Handle cash input visibility based on payment method
         document.getElementById('payment-type').addEventListener('change', (e) => {
             const cashGroup = document.getElementById('cash-input-group');
@@ -60,9 +70,23 @@ const app = {
     // --- Authentication ---
     handleLogin(e) {
         e.preventDefault();
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
+        const userEl = document.getElementById('username');
+        const passEl = document.getElementById('password');
+        const user = userEl.value;
+        const pass = passEl.value;
         const errorEl = document.getElementById('login-error');
+
+        // Reset borders
+        userEl.classList.remove('is-invalid');
+        passEl.classList.remove('is-invalid');
+
+        if (!user || !pass) {
+            if (!user) userEl.classList.add('is-invalid');
+            if (!pass) passEl.classList.add('is-invalid');
+            errorEl.innerText = 'Mohon isi Username dan Password Anda!';
+            errorEl.style.display = 'block';
+            return;
+        }
 
         if (user === 'kasir' && pass === '123') {
             errorEl.style.display = 'none';

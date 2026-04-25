@@ -25,11 +25,11 @@
             <form id="login-form">
                 <div class="input-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" class="form-control" placeholder="Masukkan username" required autocomplete="off" oninvalid="this.setCustomValidity('Mohon isi username Anda')" oninput="this.setCustomValidity(''); document.getElementById('login-error').style.display='none';">
+                    <input type="text" id="username" class="form-control" placeholder="Masukkan username" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" class="form-control" placeholder="Masukkan password" required oninvalid="this.setCustomValidity('Mohon isi password Anda')" oninput="this.setCustomValidity(''); document.getElementById('login-error').style.display='none';">
+                    <input type="password" id="password" class="form-control" placeholder="Masukkan password">
                 </div>
                 <div id="login-error" style="color: var(--danger); font-size: 0.875rem; text-align: center; margin-top: -0.5rem; margin-bottom: 1rem; display: none; font-weight: 500;"></div>
                 <button type="submit" class="btn btn-primary btn-block btn-lg mt-1">Masuk ke Sistem</button>
